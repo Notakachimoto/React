@@ -1,0 +1,62 @@
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import FilterType from './FilterType';
+
+const ShoppingList = () => {
+  const [items, setItems] = useState([]);
+  const [filteredItems, setFilteredItems] = useState([]);
+  const [selectedType, setSelectedType] = useState('other');
+
+  const itemTypes = [
+    { name: 'Парфюмерия', type: 'perfume' },
+    { name: 'Овощи', type: 'vegetables' },
+    { name: 'Фрукты', type: 'fruits' },
+    { name: 'Мясо', type: 'meat' },
+    { name: 'Прочее', type: 'other' },
+  ];
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const response = await axios.get('/shoplist');
+        setItems(response.data.items);
+        setFilteredItems(response.data.items.filter(item => item.type === 'other'));
+      } catch (error) {
+        console.error('Ошибка при получении данных:', error);
+      }
+    };
+
+    fetchItems();
+  }, []);
+
+  const handleTypeChange = (event) => {
+    const type = event.target.value;
+    setSelectedType(type);
+    const newFilteredItems = items.filter(item => type === 'other' ? item.type === 'other' : item.type === type);
+    newFilteredItems.sort((a, b) => a.name.localeCompare(b.name));
+    setFilteredItems(newFilteredItems);
+  };
+
+  return (
+    <div className="shopList">
+      <h3>Список покупок:</h3>
+      <FilterType 
+        itemTypes={itemTypes} 
+        selectedType={selectedType} 
+        onTypeChange={handleTypeChange} 
+      />
+      <table className="shopTable">
+        <tbody>
+          {filteredItems.map((item) => (
+            <tr key={item.id}>
+              <td>{item.name}</td>
+              <td>{item.price}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default ShoppingList;
