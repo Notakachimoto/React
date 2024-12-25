@@ -1,0 +1,17 @@
+import React from 'react';
+
+const FilterType = ({ itemTypes, selectedType, onTypeChange }) => {
+  return (
+    <div className="controls">
+      <select name="itemtype" id="itemtype" value={selectedType} onChange={onTypeChange}>
+        {itemTypes.map ((item) => (
+          <option key={item.type} value={item.type}>
+            {item.name}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+};
+
+export default FilterType;
